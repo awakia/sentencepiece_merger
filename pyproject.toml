@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.12"
 sentencepiece = "^0.2.0"
 protobuf = "^5.26.1"
+numpy = "^1.26.4"
+scipy = "^1.13.0"
 
 
 [tool.poetry.group.dev.dependencies]
