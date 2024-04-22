@@ -44,10 +44,14 @@ def merge_models(base_model_path, target_model_path, config):
             base.pieces.append(sp)
 
     print("Step4: Sort the merged model")
+    normal_pieces = [sp for sp in base.pieces if sp.type == ModelProto.SentencePiece.NORMAL]
+    special_pieces = [sp for sp in base.pieces if sp.type != ModelProto.SentencePiece.NORMAL]
     if config.sort == 'score':
-        base.pieces.sort(key=lambda sp: (sp.Type != ModelProto.SentencePiece.NORMAL, -sp.score))
+        normal_pieces.sort(key=lambda sp: -sp.score)
     elif config.sort == 'alphabet':
-        base.pieces.sort(key=lambda sp: (sp.Type != ModelProto.SentencePiece.NORMAL, sp.piece))
+        normal_pieces.sort(key=lambda sp: sp.piece)
+    del base.pieces[:]
+    base.pieces.extend(special_pieces + normal_pieces)
 
     print("Step5: Save the merged model")
     save_model(base, config.output)
@@ -93,7 +97,6 @@ def print_special_pieces(model, exclude_byte=True):
         if exclude_byte and sp.type == ModelProto.SentencePiece.BYTE:
             continue
         print(sp.type, sp.piece, sp.score)
-    return None
 
 
 def get_normalize_factor(model):
