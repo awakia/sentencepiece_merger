@@ -6,6 +6,9 @@ import numpy as np
 from scipy.special import logsumexp
 
 
+NORMALIZE_BASE = False
+
+
 def merge_models(base_model_path, target_model_path, config):
     base = load_model(base_model_path)
     target = load_model(target_model_path)
@@ -23,9 +26,13 @@ def merge_models(base_model_path, target_model_path, config):
     print("Step2: Normalize target score to consider noomarize and prioritize factor")
     base_normalize_factor = get_normalize_factor(base)
     target_normalize_factor = get_normalize_factor(target)
+    normalize_factor = target_normalize_factor
+    if NORMALIZE_BASE:
+        normalize_factor -= base_normalize_factor
+
     for target_sp in target.pieces:
         if config.normalize:
-            target_sp.score += base_normalize_factor - target_normalize_factor
+            target_sp.score += normalize_factor
         if config.prioritize:
             target_sp.score -= math.log(config.prioritize)
 
