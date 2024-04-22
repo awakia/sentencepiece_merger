@@ -71,7 +71,10 @@ poetry run python sentencepiece_merger.py data/base.model data/target.model --ou
 ### data
 
 - data/botchan.model
-  - 坊ちゃん英語版のデータより生成
+  - [坊ちゃん英語版のデータ](https://github.com/google/sentencepiece/blob/master/data/botchan.txt)より生成
 - data/llm-jp-tokenizer-100k.ver3.0b1.model
   - https://github.com/llm-jp/llm-jp-tokenizer/blob/main/models/ver3.0/llm-jp-tokenizer-100k.ver3.0b1.model より
-
+- data/test_ja_model.model
+  - https://github.com/google/sentencepiece/blob/master/python/test/test_ja_model.model
+- data/test_model.model
+  - https://github.com/google/sentencepiece/blob/master/python/test/test_model.model
