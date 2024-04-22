@@ -81,6 +81,11 @@ def find_unkown_piece(model):
     return None
 
 
+def print_pieces(model):
+    for sp in model.pieces:
+        print(sp.type, sp.piece, sp.score)
+
+
 def print_special_pieces(model, exclude_byte=True):
     for sp in model.pieces:
         if sp.type == ModelProto.SentencePiece.NORMAL:

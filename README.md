@@ -61,6 +61,8 @@ poetry run python sentencepiece_merger.py data/base.model data/target.model --ou
 - sentencepiece_model_pb2.py
   - https://github.com/google/sentencepiece/blob/master/python/src/sentencepiece/sentencepiece_model_pb2.py より
   - 参考: [sentencepiece_model.proto](https://github.com/google/sentencepiece/blob/master/src/sentencepiece_model.proto)
+- show_model.py
+  - `python run show_model.py target.model` というコマンドでmodelの中身を表示する
 - pyproject.toml
   - poetryの設定ファイル
 - pyproject.toml
