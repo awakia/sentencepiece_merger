@@ -9,18 +9,27 @@ from scipy.special import logsumexp
 def merge_models(base_model_path, target_model_path, config):
     base = load_model(base_model_path)
     target = load_model(target_model_path)
+
+    "Step0: Show metrics of base and target models"
     show_metrics_of_model(base, "Base")
     show_metrics_of_model(target, "Target")
     if config.output is None:
         return
+
+    print("Step1: Create hash table for base and target models")
     base_hash = create_hash_table(base)
     target_hash = create_hash_table(target)
 
+    print("Step2: Normalize target score to consider noomarize and prioritize factor")
+    base_normalize_factor = get_normalize_factor(base)
+    target_normalize_factor = get_normalize_factor(target)
     for target_sp in target.pieces:
         if config.normalize:
-            target_sp.score += get_normalize_factor(target) - get_normalize_factor(base)
+            target_sp.score += base_normalize_factor - target_normalize_factor
         if config.prioritize:
             target_sp.score -= math.log(config.prioritize)
+
+    print("Step3-1: Merge models - Update existing pieces from target model")
     for sp in base.pieces:
         if sp.piece in target_hash:
             target_sp = target_hash[sp.piece]
@@ -28,18 +37,19 @@ def merge_models(base_model_path, target_model_path, config):
                 sp.score = max(sp.score, target_sp.score)
             elif config.merge_style == 'target':
                 sp.score = target_sp.score
+
+    print("Step3-2: Merge models - Add new pieces from target model")
     for sp in target.pieces:
         if sp.piece not in base_hash:
-            score = sp.score
-            if config.normalize:
-                score += get_normalize_factor(target) - get_normalize_factor(base)
-            if config.prioritize:
-                score -= math.log(config.prioritize)
             base.pieces.append(sp)
+
+    print("Step4: Sort the merged model")
     if config.sort == 'score':
-        base.pieces.sort(key=lambda sp: sp.score, reverse=True)
+        base.pieces.sort(key=lambda sp: (sp.Type != ModelProto.SentencePiece.NORMAL, -sp.score))
     elif config.sort == 'alphabet':
-        base.pieces.sort(key=lambda sp: sp.piece)
+        base.pieces.sort(key=lambda sp: (sp.Type != ModelProto.SentencePiece.NORMAL, sp.piece))
+
+    print("Step5: Save the merged model")
     save_model(base, config.output)
 
 
