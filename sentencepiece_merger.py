@@ -4,7 +4,7 @@ import argparse
 import math
 import numpy as np
 from scipy.special import logsumexp
-import re
+import regex as re
 from langdetect import detect
 
 
@@ -96,6 +96,7 @@ def find_unkown_piece(model):
 
 english_pattern = re.compile(r'[A-Za-z0-9\s!\"#$%&\'()*+,\-./:;<=>?@\[\\\]^_`{|}~▁]+')
 japanese_pattern = re.compile(r'[ぁ-んァ-ン一-龯々〆〤▁]+')
+symbol_pattern = re.compile(r'[\p{P}\p{Emoji}\p{InCJK_Symbols_and_Punctuation}×−▁]+')
 
 
 def detect_language(piece):
@@ -103,6 +104,8 @@ def detect_language(piece):
         return "en"
     elif japanese_pattern.fullmatch(piece):
         return "ja"
+    elif symbol_pattern.fullmatch(piece):
+        return "symbol"
     else:
         try:
             return detect(piece)
@@ -118,7 +121,7 @@ def print_pieces(model):
 def print_non_english_japanese_pieces(model):
     for sp in model.pieces:
         lang = detect_language(sp.piece)
-        if lang != "en" and lang != "ja":
+        if lang != "en" and lang != "ja" and lang != "symbol" and lang != "unknown":
             lang = detect_language(sp.piece)
             print(sp.type, sp.piece, lang, sp.score)
 

@@ -12,6 +12,7 @@ protobuf = "^5.26.1"
 numpy = "^1.26.4"
 scipy = "^1.13.0"
 langdetect = "^1.0.9"
+regex = "^2024.4.16"
 
 
 [tool.poetry.group.dev.dependencies]
