@@ -5,11 +5,11 @@ import argparse
 
 def show_model(model_path, only_foreign=False):
     model = load_model(model_path)
-    show_metrics_of_model(model, model_path)
     if only_foreign:
         print_non_english_japanese_pieces(model)
-    else:
-        print_pieces(model)
+        return
+    show_metrics_of_model(model, model_path)
+    print_pieces(model)
 
 
 def main():
