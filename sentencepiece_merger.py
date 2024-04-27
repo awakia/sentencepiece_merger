@@ -4,6 +4,8 @@ import argparse
 import math
 import numpy as np
 from scipy.special import logsumexp
+import re
+from langdetect import detect
 
 
 NORMALIZE_BASE = False
@@ -70,8 +72,8 @@ def load_model(model_path):
     return m
 
 
-def save_model(model, model_path):
-    with open(model_path, "wb") as f:
+def save_model(model, output_path):
+    with open(output_path, "wb") as f:
         f.write(model.SerializeToString())
 
 
@@ -92,9 +94,33 @@ def find_unkown_piece(model):
     return None
 
 
+english_pattern = re.compile(r'[A-Za-z0-9\s!\"#$%&\'()*+,\-./:;<=>?@\[\\\]^_`{|}~▁]+')
+japanese_pattern = re.compile(r'[ぁ-んァ-ン一-龯々〆〤▁]+')
+
+
+def detect_language(piece):
+    if english_pattern.fullmatch(piece):
+        return "en"
+    elif japanese_pattern.fullmatch(piece):
+        return "ja"
+    else:
+        try:
+            return detect(piece)
+        except Exception:
+            return "unknown"
+
+
 def print_pieces(model):
     for sp in model.pieces:
         print(sp.type, sp.piece, sp.score)
+
+
+def print_non_english_japanese_pieces(model):
+    for sp in model.pieces:
+        lang = detect_language(sp.piece)
+        if lang != "en" and lang != "ja":
+            lang = detect_language(sp.piece)
+            print(sp.type, sp.piece, lang, sp.score)
 
 
 def print_special_pieces(model, exclude_byte=True):
